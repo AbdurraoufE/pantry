@@ -10,10 +10,13 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: 'background.paper',
+  bgcolor: 'white',
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 2
 };
 
 export default function Home() {
@@ -21,6 +24,7 @@ export default function Home() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [itemName, setItemName] = useState("");
 
   useEffect(() => {
     const updatePantry = async () => {
@@ -51,13 +55,14 @@ export default function Home() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box style={style}>
+        <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Text in a modal
+            Add an item
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
+          <Stack width="100%" direction={"row"} spacing={2}>
+            <TextField id = "outlined-basic" label="Item" variant="outlined" fullWidth />
+            <Button variant="outlined">Add</Button>
+          </Stack>
         </Box>
       </Modal>
       <Button variant="contained" onClick={handleOpen}>Add Items</Button>
