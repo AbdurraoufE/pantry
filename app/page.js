@@ -27,10 +27,15 @@ export default function Home() {
       alignItems="center"
       flexDirection={"column"}
     >
+      <Box border={"1px solid #333"}
+      >
       <Box
         width={"800px"}
         height={"100px"}
         bgcolor={"#b9e2f5"} // background color for pantry color
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
       > 
       <Typography
         variant={"h2"}
@@ -63,6 +68,7 @@ export default function Home() {
           </Box>
         ))}
       </Stack>
+    </Box>
     </Box>
   );
 }
