@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 
 const items = [
   "tomato",
@@ -31,13 +31,22 @@ export default function Home() {
           <Box
             key={item}
             width="100%"
-            height="100px"
+            height="300px"
             display="flex"
             justifyContent="center"
             alignItems="center"
             bgcolor={"#D3D3D3"}
           >
-            {item}
+            <Typography
+              variant={"h4"}
+              color={"#333"}
+              textAlign={"center"}        
+            >
+               {
+                // capitalize first letter of item
+                item.charAt(0).toUpperCase() + item.slice(1)
+               }
+            </Typography>
           </Box>
         ))}
       </Stack>
