@@ -1,4 +1,8 @@
-import { Box, Stack, Typography } from "@mui/material";
+'use client'
+import { useState, useEffect } from 'react'
+import { Box, Stack, Typography, Button, Modal, TextField } from "@mui/material";
+import { firestore } from '@/firebase';
+import {collection} from 'firebase/firestore';
 
 const items = [
   "tomato",
@@ -18,6 +22,10 @@ const items = [
 ];
 
 export default function Home() {
+  useEffect(() => {
+    const items = collection(firestore, "pantry")
+    console.log(items)
+  }, [])
   return (
     <Box
       width="100vw"
