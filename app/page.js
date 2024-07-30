@@ -26,19 +26,28 @@ export default function Home() {
   const handleClose = () => setOpen(false);
   const [itemName, setItemName] = useState("");
 
+  // update pantry function
+  const updatePantry = async () => {
+    const snapshot = query(collection(firestore, "pantry"))
+    const docs = await getDocs(snapshot)
+    const pantryList = [] // list of pantry items
+    docs.forEach((doc) => {
+      pantryList.push(doc.id) // adds the items from pantry
+    })
+    console.log(pantryList)
+    setPantry(pantryList)
+  }
+
   useEffect(() => {
-    const updatePantry = async () => {
-      const snapshot = query(collection(firestore, "pantry"))
-      const docs = await getDocs(snapshot)
-      const pantryList = [] // list of pantry items
-      docs.forEach((doc) => {
-        pantryList.push(doc.id) // adds the items from pantry
-      })
-      console.log(pantryList)
-      setPantry(pantryList)
-    }
     updatePantry();
   }, [])
+
+  // handle the add item button
+  const addItemFunction = (item) => {
+    console.log(item)
+  }
+
+
   return (
     <Box
       width="100vw"
@@ -60,8 +69,22 @@ export default function Home() {
             Add an item
           </Typography>
           <Stack width="100%" direction={"row"} spacing={2}>
-            <TextField id = "outlined-basic" label="Item" variant="outlined" fullWidth />
-            <Button variant="outlined">Add</Button>
+            <TextField 
+            id = "outlined-basic" 
+            label="Item" 
+            variant="outlined" 
+            fullWidth
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
+            />
+            <Button variant="outlined" 
+            onClick={() => {
+              addItemFunction(itemName)
+              setItemName("")
+              handleClose()
+            }}
+            
+            >Add</Button>
           </Stack>
         </Box>
       </Modal>
