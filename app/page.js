@@ -25,7 +25,20 @@ export default function Home() {
       display="flex"
       justifyContent="center"
       alignItems="center"
+      flexDirection={"column"}
     >
+      <Box
+        width={"800px"}
+        height={"100px"}
+        bgcolor={"#b9e2f5"} // background color for pantry color
+      > 
+      <Typography
+        variant={"h2"}
+        color={"#232b2b"} // text color for pantry title
+        textAlign={"center"}
+      >Your Pantry
+      </Typography>
+      </Box>
       <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
         {items.map((item) => (
           <Box
@@ -35,7 +48,7 @@ export default function Home() {
             display="flex"
             justifyContent="center"
             alignItems="center"
-            bgcolor={"#D3D3D3"}
+            bgcolor={"#edf7fc"} // background color for items list
           >
             <Typography
               variant={"h4"}
