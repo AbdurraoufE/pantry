@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Stack, Typography, Button, Modal, TextField } from "@mui/material";
 import { firestore } from '@/firebase';
-import {collection, query, getDocs} from 'firebase/firestore';
+import {collection, query, doc, getDocs, setDoc} from 'firebase/firestore';
 
 const style = {
   position: 'absolute',
@@ -42,11 +42,13 @@ export default function Home() {
     updatePantry();
   }, [])
 
-  // handle the add item button
-  const addItemFunction = (item) => {
-    console.log(item)
+  // handle the add item button function
+  const addItem = async (item) => {
+    // connect to firebase server
+    const docRef = doc(collection(firestore, "pantry"), item) // adds doc to pantry
+    await setDoc(docRef, {})
+    updatePantry() 
   }
-
 
   return (
     <Box
@@ -79,7 +81,7 @@ export default function Home() {
             />
             <Button variant="outlined" 
             onClick={() => {
-              addItemFunction(itemName)
+              addItem(itemName)
               setItemName("")
               handleClose()
             }}
