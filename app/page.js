@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Stack, Typography, Button, Modal, TextField } from "@mui/material";
 import { firestore } from '@/firebase';
-import {collection, query, doc, getDocs, setDoc, deleteDoc} from 'firebase/firestore';
+import {collection, query, doc, getDocs, setDoc, deleteDoc, getDoc} from 'firebase/firestore';
 
 const style = {
   position: 'absolute',
@@ -32,7 +32,7 @@ export default function Home() {
     const docs = await getDocs(snapshot)
     const pantryList = [] // list of pantry items
     docs.forEach((doc) => {
-      pantryList.push(doc.id) // adds the items from pantry
+      pantryList.push({name: doc.id, ...doc.data()}) // adds the items from pantry & quantaties
     })
     console.log(pantryList)
     setPantry(pantryList)
@@ -46,17 +46,32 @@ export default function Home() {
   const addItem = async (item) => {
     // connect to firebase server
     const docRef = doc(collection(firestore, "pantry"), item) // adds doc to pantry
-    await setDoc(docRef, {})
-    await updatePantry() 
+    //check if we already have the item
+    const docSnap = await getDoc(docRef)
+    // adds quantity to pantry item if exists
+    if (docSnap.exists()) {
+      const {count} = docSnap.data()
+      await setDoc(docRef, {count: count + 1})
+    } else {
+      await setDoc(docRef, {count: 1})
+    }
+    await updatePantry()
   }
 
   // Function: handle the remove item button
   const removeItem = async (item) => {
     const docRef = doc(collection(firestore, "pantry"), item)
-    //deletes doc/item from pantry
-    await deleteDoc(docRef).then(() =>{
-      updatePantry() 
-    })
+    const docSnap = await getDoc(docRef)
+    //deletes doc/item from pantry from its quantity
+    if (docSnap.exists){
+      const {count} = docSnap.data()
+      if (count === 1) {
+        await deleteDoc(docRef)
+      }else{
+        await setDoc(docRef, {count: count -1})
+      }
+    }
+    await updatePantry()
   }
 
   return (
@@ -118,15 +133,15 @@ export default function Home() {
       </Typography>
       </Box>
       <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
-        {pantry.map((item) => (
+      {pantry.map(({ name, count }) => ( // ISSUE HERE
             <Box
-              key={item}
+              key={name}
               width="100%"
               minHeight="150px"
               display="flex"
               justifyContent="space-between"
               alignItems="center"
-              bgcolor={"#edf7fc"} // background color for items list
+              bgcolor={"#edf7fc"} 
               paddingX={4} 
             >
               <Typography
@@ -135,11 +150,16 @@ export default function Home() {
                 textAlign={"center"}    
               >
                 {
-                  // capitalize first letter of item
-                  item.charAt(0).toUpperCase() + item.slice(1)
+                  name.charAt(0).toUpperCase() + name.slice(1)
                 }
               </Typography>
-            <Button variant='contained' onClick={() => removeItem(item)}>Remove</Button>
+              <Typography
+              variant='contained'
+              color={"#333"}
+              textAlign={"center"}
+              > Quantity: {count}
+              </Typography>
+            <Button variant='contained' onClick={() => removeItem(name)}>Remove</Button>
           </Box>
         ))}
       </Stack>
