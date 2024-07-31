@@ -42,11 +42,18 @@ export default function Home() {
     updatePantry();
   }, [])
 
-  // handle the add item button function
+  // Function: handle the add item button
   const addItem = async (item) => {
     // connect to firebase server
     const docRef = doc(collection(firestore, "pantry"), item) // adds doc to pantry
     await setDoc(docRef, {})
+    updatePantry() 
+  }
+
+  // Function: handle the remove item button
+  const removeItem = async (item) => {
+    const docRef = doc(collection(firestore, "pantry"), item)
+    await docRef.delete()
     updatePantry() 
   }
 
@@ -99,6 +106,7 @@ export default function Home() {
         display={"flex"}
         justifyContent={"center"}
         alignItems={"center"}
+        paddingX={5}
       > 
       <Typography
         variant={"h2"}
@@ -109,29 +117,31 @@ export default function Home() {
       </Box>
       <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
         {pantry.map((item) => (
-          <Box
-            key={item}
-            width="100%"
-            minHeight="150px"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            bgcolor={"#edf7fc"} // background color for items list
-          >
-            <Typography
-              variant={"h4"}
-              color={"#333"}
-              textAlign={"center"}        
+            <Box
+              key={item}
+              width="100%"
+              minHeight="150px"
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              bgcolor={"#edf7fc"} // background color for items list
+              paddingX={4} 
             >
-               {
-                // capitalize first letter of item
-                item.charAt(0).toUpperCase() + item.slice(1)
-               }
-            </Typography>
+              <Typography
+                variant={"h4"}
+                color={"#333"}
+                textAlign={"center"}    
+              >
+                {
+                  // capitalize first letter of item
+                  item.charAt(0).toUpperCase() + item.slice(1)
+                }
+              </Typography>
+            <Button variant='contained' onClick={() => removeItem(item)}>Remove</Button>
           </Box>
         ))}
       </Stack>
     </Box>
-    </Box>
+  </Box>
   );
 }
