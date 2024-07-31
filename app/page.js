@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Stack, Typography, Button, Modal, TextField } from "@mui/material";
 import { firestore } from '@/firebase';
-import {collection, query, doc, getDocs, setDoc} from 'firebase/firestore';
+import {collection, query, doc, getDocs, setDoc, deleteDoc} from 'firebase/firestore';
 
 const style = {
   position: 'absolute',
@@ -53,7 +53,7 @@ export default function Home() {
   // Function: handle the remove item button
   const removeItem = async (item) => {
     const docRef = doc(collection(firestore, "pantry"), item)
-    await docRef.delete()
+    deleteDoc(docRef) //deletes doc/item from pantry
     updatePantry() 
   }
 
