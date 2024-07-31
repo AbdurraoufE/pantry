@@ -14,3 +14,6 @@ React with Next.js
 Material UI
 Firebase
 CI/CD with Vercel and GitHub actions
+
+## Todo
+Host on Vercel
