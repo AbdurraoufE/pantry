@@ -47,14 +47,16 @@ export default function Home() {
     // connect to firebase server
     const docRef = doc(collection(firestore, "pantry"), item) // adds doc to pantry
     await setDoc(docRef, {})
-    updatePantry() 
+    await updatePantry() 
   }
 
   // Function: handle the remove item button
   const removeItem = async (item) => {
     const docRef = doc(collection(firestore, "pantry"), item)
-    deleteDoc(docRef) //deletes doc/item from pantry
-    updatePantry() 
+    //deletes doc/item from pantry
+    await deleteDoc(docRef).then(() =>{
+      updatePantry() 
+    })
   }
 
   return (
