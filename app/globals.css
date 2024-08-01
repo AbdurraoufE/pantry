@@ -1,3 +1,8 @@
+/* global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -6,5 +11,65 @@
 
 body {
   font-family: "Roboto", sans-serif;
-  background-color: #f4f4f9;
+  background-color: #1a202c; /* Dark background color */
+  color: #f4f4f9; /* Light text color */
+}
+
+/* Sign-Up Page Styles */
+.sign-up-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: #1a202c; /* Dark background color */
+}
+
+.sign-up-box {
+  background-color: #2d3748; /* Slightly lighter background */
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.sign-up-title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.sign-up-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.sign-up-input {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #4a5568; /* Darker border */
+  border-radius: 4px;
+  background-color: #2d3748; /* Match box background */
+  color: #f4f4f9; /* Light text color */
+}
+
+.sign-up-input::placeholder {
+  color: #a0aec0; /* Placeholder color */
+}
+
+.sign-up-button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #4c51bf; /* Primary button color */
+  color: #f4f4f9; /* Light text color */
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.sign-up-button:hover {
+  background-color: #3c366b; /* Darker hover color */
 }
