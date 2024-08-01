@@ -33,8 +33,13 @@ export default function Home() {
   const [filteredPantry, setFilteredPantry] = useState([]);
   const [user] = useAuthState(auth);
   const router = useRouter();
-  const userSession = sessionStorage.getItem("user");
+  const [userSession, setUserSession] = useState("user");
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUserSession(sessionStorage.getItem("user"));
+    }
+  }, []);
 
   // check if user is authenticated
   if (!user && !userSession) {
