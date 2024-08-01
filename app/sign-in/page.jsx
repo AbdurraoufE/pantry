@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth } from "@/app/firebase/config";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -29,6 +29,7 @@ const SignIn = () => {
     try {
       const res = signInWithEmailAndPassword(email, password);
       console.log({ res });
+      sessionStorage.setItem("user", true);
       setEmail("");
       setPassword("");
       router.push("/")

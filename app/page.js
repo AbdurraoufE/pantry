@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react'
 import { Box, Stack, Typography, Button, Modal, TextField, Grid } from "@mui/material";
 import { firestore } from '@/firebase';
 import { collection, query, doc, getDocs, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { useAuthState } from "react-firebase-hooks/auth"
+import { auth } from "@/app/firebase/config"
+import { useRouter } from 'next/navigation';
+import { signOut } from 'firebase/auth';
 
 const style = {
   position: 'absolute',
@@ -27,6 +31,15 @@ export default function Home() {
   const [itemName, setItemName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPantry, setFilteredPantry] = useState([]);
+  const [user] = useAuthState(auth);
+  const router = useRouter();
+  const userSession = sessionStorage.getItem("user");
+
+
+  // check if user is authenticated
+  if (!user && !userSession) {
+    router.push("/sign-up")
+  }
 
   // update pantry function
   const updatePantry = async () => {
@@ -119,6 +132,7 @@ export default function Home() {
   }
 
   return (
+    // add signout button here for ppl to sign out
     <Box
       width="100vw"
       height="100vh"
@@ -176,6 +190,15 @@ export default function Home() {
         sx={{ marginBottom: 2 }}
       />
       <Button variant="contained" onClick={handleSearch}>Search</Button>
+      <Button
+              variant="outlined"
+              onClick={() => {
+                signOut(auth);
+                sessionStorage.removeItem("user");
+              }}
+            >
+              SignOut
+            </Button>
       </Stack>
       <Box border={"1px solid #333"}>
         <Box

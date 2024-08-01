@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth } from "@/app/firebase/config";
+import { useRouter } from "next/navigation";
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,8 @@ const SignUp = () => {
     loading,
     authError
   ] = useCreateUserWithEmailAndPassword(auth);
+    //redirect to pantry app/UI screen
+    const router = useRouter();
 
   const handleSignUp = async (event) => {
     event.preventDefault();
@@ -23,10 +26,13 @@ const SignUp = () => {
       return;
     }
     try {
-      await createUserWithEmailAndPassword(email, password);
-      console.log({ user });
+      const res = await createUserWithEmailAndPassword(email, password);
+      console.log({ res });
+      sessionStorage.setItem("user", true);
       setEmail("");
       setPassword("");
+    //   router.push("/")// after signup go to pantry
+      router.push("/sign-in")
     } catch (e) {
       console.error(e);
     }
