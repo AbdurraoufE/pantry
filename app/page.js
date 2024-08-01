@@ -43,7 +43,7 @@ export default function Home() {
 
   useEffect(() => {
     updatePantry();
-  }, [])
+  }, []);
 
   useEffect(() => {
     setFilteredPantry(
@@ -86,13 +86,13 @@ export default function Home() {
 
   // Function: handles the search button
   const handleSearch = () => {
-    console.log('Search term:', searchTerm);
     // checks if button is clicked with empty search bar
     if (searchTerm.trim() === ""){
       setFilteredPantry(pantry);
-    }
-    const searchResult = pantry.filter((item) => item.name.toLowerCase() === searchTerm.toLowerCase());
+    }else {
+      const searchResult = pantry.filter((item) => item.name.toLowerCase() === searchTerm.toLowerCase());
     setFilteredPantry(searchResult);
+    }
   }
 
   return (
@@ -145,6 +145,7 @@ export default function Home() {
         sx={{marginBottom: 2}}
       />
       <Button variant="contained" onClick={handleSearch}>Search</Button>
+
       <Box border={"1px solid #333"}>
       <Box
         width={"800px"}
