@@ -1,5 +1,7 @@
+# Current status of Website
+![image](https://github.com/user-attachments/assets/febe3734-cec3-4078-bb19-eb03b648f1b8)
 
-# Current Status of Website
+# Old Website
 ![image](https://github.com/user-attachments/assets/ea631394-ac0e-4fac-89f6-18c189329d7e)
 
 ## Features
