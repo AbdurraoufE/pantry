@@ -25,6 +25,9 @@ export default function Home() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [itemName, setItemName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredPantry, setFilteredPantry] = useState([]);
+
 
   // update pantry function
   const updatePantry = async () => {
@@ -34,13 +37,20 @@ export default function Home() {
     docs.forEach((doc) => {
       pantryList.push({name: doc.id, ...doc.data()}) // adds the items from pantry & quantaties
     })
-    console.log(pantryList)
     setPantry(pantryList)
+    setFilteredPantry(pantryList); 
   }
 
   useEffect(() => {
     updatePantry();
   }, [])
+
+  useEffect(() => {
+    setFilteredPantry(
+      pantry.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+}, [searchTerm, pantry]);
 
   // Function: handle the add item button
   const addItem = async (item) => {
@@ -63,7 +73,7 @@ export default function Home() {
     const docRef = doc(collection(firestore, "pantry"), item)
     const docSnap = await getDoc(docRef)
     //deletes doc/item from pantry from its quantity
-    if (docSnap.exists){
+    if (docSnap.exists()){
       const {count} = docSnap.data()
       if (count === 1) {
         await deleteDoc(docRef)
@@ -72,6 +82,17 @@ export default function Home() {
       }
     }
     await updatePantry()
+  }
+
+  // Function: handles the search button
+  const handleSearch = () => {
+    console.log('Search term:', searchTerm);
+    // checks if button is clicked with empty search bar
+    if (searchTerm.trim() === ""){
+      setFilteredPantry(pantry);
+    }
+    const searchResult = pantry.filter((item) => item.name.toLowerCase() === searchTerm.toLowerCase());
+    setFilteredPantry(searchResult);
   }
 
   return (
@@ -115,6 +136,15 @@ export default function Home() {
         </Box>
       </Modal>
       <Button variant="contained" onClick={handleOpen}>Add Items</Button>
+      <TextField
+        label="Search item"
+        variant='outlined' 
+        fullWidth
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        sx={{marginBottom: 2}}
+      />
+      <Button variant="contained" onClick={handleSearch}>Search</Button>
       <Box border={"1px solid #333"}>
       <Box
         width={"800px"}
@@ -133,7 +163,7 @@ export default function Home() {
       </Typography>
       </Box>
       <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
-      {pantry.map(({ name, count }) => ( // ISSUE HERE
+      {filteredPantry.map(({ name, count }) => ( // ISSUE HERE
             <Box
               key={name}
               width="100%"
