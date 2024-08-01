@@ -60,6 +60,7 @@ const SignIn = () => {
             required
           />
           <button type="submit" className="sign-in-button">Sign In</button>
+          <p className="already-account" onClick={() => router.push("/sign-up")}> Don't have an account?</p>
         </form>
         {loading && <p>Loading...</p>}
         {error && <p>Error: {error}</p>}

@@ -10,6 +10,24 @@ body {
   color: #f4f4f9; /* Light text color */
 }
 
+/* Reset some default browser styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #121212; /* Background color for the whole page */
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden; /* Prevents scrolling */
+}
+
 /* Sign-Up Page Styles */
 .sign-up-container {
   min-height: 100vh;
@@ -18,8 +36,10 @@ body {
   align-items: center;
   padding: 1rem;
   background-color: #1a202c; /* Dark background color */
+  width: 100%; /* Ensure full width */
 }
 
+/* Box styling for the sign-up form */
 .sign-up-box {
   background-color: #2d3748; /* Slightly lighter background */
   padding: 2rem;
@@ -29,6 +49,7 @@ body {
   width: 100%;
 }
 
+/* Title styling */
 .sign-up-title {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
@@ -36,11 +57,13 @@ body {
   font-weight: bold;
 }
 
+/* Form styling */
 .sign-up-form {
   display: flex;
   flex-direction: column;
 }
 
+/* Input styling */
 .sign-up-input {
   padding: 0.75rem;
   margin-bottom: 1rem;
@@ -54,6 +77,7 @@ body {
   color: #a0aec0; /* Placeholder color */
 }
 
+/* Button styling */
 .sign-up-button {
   padding: 0.75rem;
   border: none;
@@ -70,35 +94,18 @@ body {
 }
 
 /* Sign-in page styles */
-
-/* Reset some default browser styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #121212;
-  color: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-/* Container for the sign-in component */
 .sign-in-container {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
+  background-color: #1a202c;
 }
 
 /* Box styling for the sign-in form */
 .sign-in-box {
-  background-color: #1e1e1e;
+  background-color: #2d3748;
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -121,13 +128,16 @@ body {
 
 /* Input styling */
 .sign-in-input {
-  background-color: #333;
-  color: #fff;
-  border: none;
   padding: 0.75rem;
   margin-bottom: 1rem;
-  border-radius: 5px;
-  font-size: 1rem;
+  border: 1px solid #4a5568; /* Darker border */
+  border-radius: 4px;
+  background-color: #2d3748; /* Match box background */
+  color: #f4f4f9; /* Light text color */
+}
+
+.sign-in-input::placeholder {
+  color: #a0aec0; /* Placeholder color */
 }
 
 /* Button styling */
@@ -151,4 +161,17 @@ p {
   margin-top: 1rem;
   text-align: center;
   font-size: 1rem;
+}
+
+
+/* Already have an account button */
+.already-account {
+  cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+  color: #007bff; /* Change color to a typical link color */
+  text-decoration: underline; /* Add underline to mimic link appearance */
+  font-size: 16px; /* Adjust font size as needed */
+}
+
+.already-account:hover {
+  color: #0056b3; /* Darker color on hover for better UX */
 }

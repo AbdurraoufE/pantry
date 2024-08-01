@@ -200,6 +200,8 @@ export default function Home() {
               onClick={() => {
                 signOut(auth);
                 sessionStorage.removeItem("user");
+                // route to sign up page
+                router.push("/sign-up")
               }}
             >
               SignOut
