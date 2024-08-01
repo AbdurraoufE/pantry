@@ -6,14 +6,25 @@ import { auth } from "@/app/firebase/config";
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth);
+  const [
+    createUserWithEmailAndPassword,
+    user,
+    loading,
+    authError
+  ] = useCreateUserWithEmailAndPassword(auth);
 
   const handleSignUp = async (event) => {
     event.preventDefault();
+    setError('');
+    if (password.length < 6) {
+      setError('Password should be at least 6 characters long.');
+      return;
+    }
     try {
-      const res = await createUserWithEmailAndPassword(email, password);
-      console.log({ res });
+      await createUserWithEmailAndPassword(email, password);
+      console.log({ user });
       setEmail("");
       setPassword("");
     } catch (e) {
@@ -44,6 +55,9 @@ const SignUp = () => {
           />
           <button type="submit" className="sign-up-button">Sign Up</button>
         </form>
+        {loading && <p>Loading...</p>}
+        {error && <p>Error: {error}</p>}
+        {authError && <p>Error: {authError.message}</p>}
       </div>
     </div>
   );
