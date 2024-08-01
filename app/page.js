@@ -92,6 +92,32 @@ export default function Home() {
     }
   };
 
+  // Function: handles the increment button
+  const incrementQuantity = async (item) => {
+    const docRef = doc(collection(firestore, "pantry"), item);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()){
+      const {count} = docSnap.data();
+      await setDoc(docRef, {count: count +1});
+    }
+    await updatePantry();
+  }
+
+  // Function: handles the increment button
+  const decrementQuantity = async (item) => {
+    const docRef =  doc(collection(firestore, "pantry"), item);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()){
+      const {count} = docSnap.data();
+      if (count === 1){
+        await deleteDoc(docRef);
+      } else {
+        await setDoc(docRef, {count: count -1});
+      }
+    }
+    await updatePantry();
+  }
+
   return (
     <Box
       width="100vw"
@@ -134,6 +160,13 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
+      <Stack
+        direction={"row"}
+        spacing={2}
+        alignItems={"center"}
+        justifyContent={"center"}
+        sx={{marginBottom: 2}}
+      >
       <TextField
         label="Search item"
         variant='outlined'
@@ -143,11 +176,11 @@ export default function Home() {
         sx={{ marginBottom: 2 }}
       />
       <Button variant="contained" onClick={handleSearch}>Search</Button>
-
+      </Stack>
       <Box border={"1px solid #333"}>
         <Box
           width={"1500px"}
-          height={"300px"}
+          height={"100px"}
           bgcolor={"#b9e2f5"}
           display={"flex"}
           justifyContent={"space-between"}
@@ -176,27 +209,45 @@ export default function Home() {
           overflow={"auto"} // Enable scrolling if needed
           padding={2}
         >
-          <Grid container spacing={2}>
-            <Grid item xs={6}><Typography variant="h6">Item</Typography></Grid>
-            <Grid item xs={3}><Typography variant="h6">Quantity</Typography></Grid>
-            <Grid item xs={3}><Typography variant="h6">Actions</Typography></Grid>
-            {filteredPantry.map(({ name, count }) => (
-              <React.Fragment key={name}>
-                <Grid item xs={6}><Typography>{name.charAt(0).toUpperCase() + name.slice(1)}</Typography></Grid>
-                <Grid item xs={3}><Typography>Quantity: {count}</Typography></Grid>
-                <Grid item xs={3}>
+        <Grid container spacing={2}>
+          <Grid item xs={6}><Typography variant="h6">Item</Typography></Grid>
+          <Grid item xs={3}><Typography variant="h6">Quantity</Typography></Grid>
+          <Grid item xs={3}><Typography variant="h6">Task</Typography></Grid>
+          {filteredPantry.map(({ name, count }) => (
+            <React.Fragment key={name}>
+              <Grid item xs={6}>
+                <Typography>{name.charAt(0).toUpperCase() + name.slice(1)}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Stack direction={"row"} spacing={1} alignItems={"center"}>
                   <Button
-                    variant='contained'
-                    color="error"
-                    sx={{ borderRadius: '15px', padding: '8px 16px', '&:hover': { bgcolor: '#c62828' } }}
-                    onClick={() => removeItem(name)}
-                  >
-                    Remove
-                  </Button>
-                </Grid>
-              </React.Fragment>
-            ))}
-          </Grid>
+                    variant='outlined'
+                    color="success"
+                    onClick={() => incrementQuantity(name)}
+                    sx={{ minWidth: '24px', height: '24px' }}
+                  >+ </Button>
+                  <Typography>Quantity: {count}</Typography>
+                  <Button
+                    variant='outlined'
+                    color='error'
+                    onClick={() => decrementQuantity(name)}
+                    sx={{ minWidth: '24px', height: '24px' }}
+                  >-</Button>
+                </Stack>
+              </Grid>
+              <Grid item xs={3}>
+                <Button
+                  variant='contained'
+                  color="error"
+                  sx={{ borderRadius: '15px', padding: '8px 16px', '&:hover': { bgcolor: '#c62828' } }}
+                  onClick={() => removeItem(name)}
+                >
+                  Remove
+                </Button>
+              </Grid>
+            </React.Fragment>
+          ))}
+        </Grid>
         </Box>
       </Box>
     </Box>
