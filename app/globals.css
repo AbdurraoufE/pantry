@@ -68,3 +68,87 @@ body {
 .sign-up-button:hover {
   background-color: #3c366b; /* Darker hover color */
 }
+
+/* Sign-in page styles */
+
+/* Reset some default browser styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Container for the sign-in component */
+.sign-in-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Box styling for the sign-in form */
+.sign-in-box {
+  background-color: #1e1e1e;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Title styling */
+.sign-in-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Form styling */
+.sign-in-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input styling */
+.sign-in-input {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+/* Button styling */
+.sign-in-button {
+  background-color: #6200ea;
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.sign-in-button:hover {
+  background-color: #3700b3;
+}
+
+/* Loading and error messages */
+p {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 1rem;
+}
