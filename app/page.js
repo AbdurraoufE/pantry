@@ -226,7 +226,7 @@ export default function Home() {
                     onClick={() => incrementQuantity(name)}
                     sx={{ minWidth: '24px', height: '24px' }}
                   >+ </Button>
-                  <Typography>Quantity: {count}</Typography>
+                  <Typography>{count}</Typography>
                   <Button
                     variant='outlined'
                     color='error'
