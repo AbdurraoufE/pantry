@@ -23,6 +23,14 @@ const style = {
   gap: 2
 };
 
+const fetchImageFromUnsplash = async (query) => {
+  const response = await fetch(
+    `https://api.unsplash.com/search/photos?query=${query}&client_id=YOUR_UNSPLASH_ACCESS_KEY`
+  );
+  const data = await response.json();
+  return data.results[0]?.urls?.small || '';
+};
+
 export default function Home() {
   const [pantry, setPantry] = useState([]);
   const [open, setOpen] = React.useState(false);
@@ -72,13 +80,14 @@ export default function Home() {
 
   // Function: handle the add item button
   const addItem = async (item) => {
+    const imageUrl = await fetchImageFromUnsplash(item);
     const docRef = doc(collection(firestore, "pantry"), item);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const { count } = docSnap.data();
-      await setDoc(docRef, { count: count + 1 });
+      await setDoc(docRef, { count: count + 1, imageUrl });
     } else {
-      await setDoc(docRef, { count: 1 });
+      await setDoc(docRef, { count: 1, imageUrl });
     }
     await updatePantry();
   };
@@ -86,15 +95,7 @@ export default function Home() {
   // Function: handle the remove item button
   const removeItem = async (item) => {
     const docRef = doc(collection(firestore, "pantry"), item);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const { count } = docSnap.data();
-      if (count === 1) {
-        await deleteDoc(docRef);
-      } else {
-        await setDoc(docRef, { count: count - 1 });
-      }
-    }
+    await deleteDoc(docRef);
     await updatePantry();
   };
 
@@ -121,7 +122,7 @@ export default function Home() {
     await updatePantry();
   }
 
-  // Function: handles the increment button
+  // Function: handles the decrement button
   const decrementQuantity = async (item) => {
     const docRef =  doc(collection(firestore, "pantry"), item);
     const docSnap = await getDoc(docRef);
@@ -137,7 +138,6 @@ export default function Home() {
   }
 
   return (
-    // add signout button here for ppl to sign out
     <Box
       width="100vw"
       height="100vh"
@@ -240,46 +240,57 @@ export default function Home() {
           padding={2}
         >
         <Grid container spacing={2}>
-          <Grid item xs={6}><Typography variant="h6">Item</Typography></Grid>
-          <Grid item xs={3}><Typography variant="h6">Quantity</Typography></Grid>
-          <Grid item xs={3}><Typography variant="h6">Task</Typography></Grid>
-          {filteredPantry.map(({ name, count }) => (
-            <React.Fragment key={name}>
-              <Grid item xs={6}>
-                <Typography>{name.charAt(0).toUpperCase() + name.slice(1)}</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Stack direction={"row"} spacing={1} alignItems={"center"}>
-                  <Button
-                    variant='outlined'
-                    color="success"
-                    onClick={() => incrementQuantity(name)}
-                    sx={{ minWidth: '24px', height: '24px' }}
-                  >+ </Button>
-                  <Typography>{count}</Typography>
-                  <Button
-                    variant='outlined'
-                    color='error'
-                    onClick={() => decrementQuantity(name)}
-                    sx={{ minWidth: '24px', height: '24px' }}
-                  >-</Button>
-                </Stack>
-              </Grid>
-              <Grid item xs={3}>
-                <Button
-                  variant='contained'
-                  color="error"
-                  sx={{ borderRadius: '15px', padding: '8px 16px', '&:hover': { bgcolor: '#c62828' } }}
-                  onClick={() => removeItem(name)}
-                >
-                  Remove
-                </Button>
-              </Grid>
-            </React.Fragment>
-          ))}
+          <Grid item xs={4}><Typography variant="h6">Item</Typography></Grid>
+          <Grid item xs={2}><Typography variant="h6">Quantity</Typography></Grid>
+          <Grid item xs={2}><Typography variant="h6">Task</Typography></Grid>
+          <Grid item xs={2}><Typography variant="h6">Image</Typography></Grid>
         </Grid>
-        </Box>
+        {filteredPantry.map((item, index) => (
+          <Grid key={index} container spacing={2} alignItems="center">
+            <Grid item xs={4}>
+              <Typography variant="body1" textAlign={"left"}>{item.name}</Typography>
+            </Grid>
+            <Grid item xs={2}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Button
+                  variant='outlined'
+                  color="success"
+                  onClick={() => incrementQuantity(item.name)}
+                  sx={{ minWidth: '24px', height: '24px' }}
+                >
+                  +
+                </Button>
+                <Typography>{item.count}</Typography>
+                <Button
+                  variant='outlined'
+                  color='error'
+                  onClick={() => decrementQuantity(item.name)}
+                  sx={{ minWidth: '24px', height: '24px' }}
+                >
+                  -
+                </Button>
+              </Stack>
+            </Grid>
+            <Grid item xs={2}>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => removeItem(item.name)}
+              >
+                Remove
+              </Button>
+            </Grid>
+            <Grid item xs={2}>
+              {item.imageUrl ? (
+                <img src={item.imageUrl} alt={item.name} width="50" />
+              ) : (
+                <Typography>No image available</Typography>
+              )}
+            </Grid>
+          </Grid>
+        ))}
+      </Box>
       </Box>
     </Box>
-  );
+  )
 }
