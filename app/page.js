@@ -24,16 +24,25 @@ const style = {
 };
 
 const fetchImageFromUnsplash = async (query) => {
-  const response = await fetch(
-    `https://api.unsplash.com/search/photos?query=${query}&client_id=YOUR_UNSPLASH_ACCESS_KEY`
-  );
-  const data = await response.json();
-  return data.results[0]?.urls?.small || '';
+  try {
+    const response = await fetch(
+      `https://api.unsplash.com/search/photos?query=${query}&client_id=YOUR_UNSPLASH_ACCESS_KEY`
+    );
+    const data = await response.json();
+    if (data.results && data.results.length > 0) {
+      return data.results[0].urls.small;
+    } else {
+      return ''; // Return an empty string or a default image URL if no results are found
+    }
+  } catch (error) {
+    console.error('Error fetching image from Unsplash:', error);
+    return ''; // Return an empty string or a default image URL in case of an error
+  }
 };
 
 export default function Home() {
   const [pantry, setPantry] = useState([]);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [itemName, setItemName] = useState("");
@@ -80,18 +89,19 @@ export default function Home() {
 
   // Function: handle the add item button
   const addItem = async (item) => {
-    const imageUrl = await fetchImageFromUnsplash(item);
     const docRef = doc(collection(firestore, "pantry"), item);
     const docSnap = await getDoc(docRef);
+  
     if (docSnap.exists()) {
       const { count } = docSnap.data();
-      await setDoc(docRef, { count: count + 1, imageUrl });
+      await setDoc(docRef, { count: count + 1 });
     } else {
-      await setDoc(docRef, { count: 1, imageUrl });
+      await setDoc(docRef, { count: 1 });
     }
+  
     await updatePantry();
   };
-
+  
   // Function: handle the remove item button
   const removeItem = async (item) => {
     const docRef = doc(collection(firestore, "pantry"), item);
@@ -115,27 +125,27 @@ export default function Home() {
   const incrementQuantity = async (item) => {
     const docRef = doc(collection(firestore, "pantry"), item);
     const docSnap = await getDoc(docRef);
-    if (docSnap.exists()){
-      const {count} = docSnap.data();
-      await setDoc(docRef, {count: count +1});
+    if (docSnap.exists()) {
+      const { count } = docSnap.data();
+      await setDoc(docRef, { count: count + 1 }, { merge: true });
+      await updatePantry();
     }
-    await updatePantry();
-  }
+  };
 
   // Function: handles the decrement button
   const decrementQuantity = async (item) => {
-    const docRef =  doc(collection(firestore, "pantry"), item);
+    const docRef = doc(collection(firestore, "pantry"), item);
     const docSnap = await getDoc(docRef);
-    if (docSnap.exists()){
-      const {count} = docSnap.data();
-      if (count === 1){
-        await deleteDoc(docRef);
+    if (docSnap.exists()) {
+      const { count } = docSnap.data();
+      if (count > 1) {
+        await setDoc(docRef, { count: count - 1 }, { merge: true });
       } else {
-        await setDoc(docRef, {count: count -1});
+        await deleteDoc(docRef);
       }
+      await updatePantry();
     }
-    await updatePantry();
-  }
+  };
 
   return (
     <Box
@@ -147,38 +157,43 @@ export default function Home() {
       flexDirection={"column"}
       gap={2}
     >
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Add an item
-          </Typography>
-          <Stack width="100%" direction={"row"} spacing={2}>
-            <TextField
-              id="outlined-basic"
-              label="Item"
-              variant="outlined"
-              fullWidth
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-            />
-            <Button
-              variant="outlined"
-              onClick={() => {
-                addItem(itemName);
-                setItemName("");
-                handleClose();
-              }}
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              sx={{ color: 'black' }} // Set the text color to black
             >
-              Add
-            </Button>
-          </Stack>
-        </Box>
-      </Modal>
+              Add an item
+            </Typography>
+            <Stack width="100%" direction={"row"} spacing={2}>
+              <TextField
+                id="outlined-basic"
+                label="Item"
+                variant="outlined"
+                fullWidth
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
+              />
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  addItem(itemName);
+                  setItemName("");
+                  handleClose();
+                }}
+              >
+                Add
+              </Button>
+            </Stack>
+          </Box>
+        </Modal>
       <Stack
         direction={"row"}
         spacing={2}
@@ -211,7 +226,7 @@ export default function Home() {
         <Box
           width={"1500px"}
           height={"100px"}
-          bgcolor={"#b9e2f5"}
+          bgcolor={"#b3946b"}
           display={"flex"}
           justifyContent={"space-between"}
           alignItems={"center"}
@@ -240,57 +255,74 @@ export default function Home() {
           padding={2}
         >
         <Grid container spacing={2}>
-          <Grid item xs={4}><Typography variant="h6">Item</Typography></Grid>
-          <Grid item xs={2}><Typography variant="h6">Quantity</Typography></Grid>
-          <Grid item xs={2}><Typography variant="h6">Task</Typography></Grid>
-          <Grid item xs={2}><Typography variant="h6">Image</Typography></Grid>
-        </Grid>
-        {filteredPantry.map((item, index) => (
-          <Grid key={index} container spacing={2} alignItems="center">
-            <Grid item xs={4}>
-              <Typography variant="body1" textAlign={"left"}>{item.name}</Typography>
-            </Grid>
-            <Grid item xs={2}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Button
-                  variant='outlined'
-                  color="success"
-                  onClick={() => incrementQuantity(item.name)}
-                  sx={{ minWidth: '24px', height: '24px' }}
-                >
-                  +
-                </Button>
-                <Typography>{item.count}</Typography>
-                <Button
-                  variant='outlined'
-                  color='error'
-                  onClick={() => decrementQuantity(item.name)}
-                  sx={{ minWidth: '24px', height: '24px' }}
-                >
-                  -
-                </Button>
-              </Stack>
-            </Grid>
-            <Grid item xs={2}>
-              <Button
-                variant="outlined"
-                color="error"
-                onClick={() => removeItem(item.name)}
+          {filteredPantry.map((item) => (
+            <Grid item xs={6} md={4} lg={3} key={item.name}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                border="1px solid #ccc"
+                borderRadius="8px"
+                padding={2}
               >
-                Remove
-              </Button>
+                {/* <img src={item.imageUrl} alt={item.name} style={{ width: '100px', height: '100px' }} /> */}
+                <Typography variant="h6">{item.name}</Typography>
+                <Typography variant="body2">Quantity: {item.count}</Typography>
+                <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
+                  <Box display="flex" gap={1} mb={1}>
+                    <Button
+                      onClick={() => incrementQuantity(item.name)}
+                      sx={{
+                        backgroundColor: "#4caf50", // Green color
+                        color: "#fff",
+                        borderRadius: '4px',
+                        padding: '4px 8px',
+                        '&:hover': {
+                          backgroundColor: "#388e3c", // Darker green on hover
+                        },
+                        fontSize: '0.9rem',
+                      }}
+                    >
+                      +
+                    </Button>
+                    <Button
+                      onClick={() => decrementQuantity(item.name)}
+                      sx={{
+                        backgroundColor: "#f44336", // Red color
+                        color: "#fff",
+                        borderRadius: '4px',
+                        padding: '4px 8px',
+                        '&:hover': {
+                          backgroundColor: "#c62828", // Darker red on hover
+                        },
+                        fontSize: '0.9rem',
+                      }}
+                    >
+                      -
+                    </Button>
+                  </Box>
+                  <Button
+                    onClick={() => removeItem(item.name)}
+                    sx={{
+                      backgroundColor: "#e64a19", // Darker red color
+                      color: "#fff",
+                      borderRadius: '4px',
+                      padding: '4px 8px',
+                      '&:hover': {
+                        backgroundColor: "#d84315", // Darker shade on hover
+                      },
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              </Box>
             </Grid>
-            <Grid item xs={2}>
-              {item.imageUrl ? (
-                <img src={item.imageUrl} alt={item.name} width="50" />
-              ) : (
-                <Typography>No image available</Typography>
-              )}
-            </Grid>
-          </Grid>
-        ))}
-      </Box>
+          ))}
+        </Grid>
+        </Box>
       </Box>
     </Box>
-  )
+  );
 }
