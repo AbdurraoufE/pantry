@@ -364,11 +364,13 @@ export default function Home() {
           Recipe Suggestions
         </Typography>
         <Card>
-          <CardContent sx={{ p: 2 }}>
-            <Box sx={{ pl: 2 }}> {/* Adding padding-left to the Box wrapping ReactMarkdown */}
-              <ReactMarkdown children={recipeSuggestions} remarkPlugins={[remarkGfm]} />
-            </Box>
-          </CardContent>
+        <CardContent sx={{ p: 2 }}>
+          <Box sx={{ pl: 2 }}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {recipeSuggestions}
+            </ReactMarkdown>
+          </Box>
+        </CardContent>
         </Card>
       </Box>
     </Box>
