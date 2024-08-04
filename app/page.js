@@ -185,7 +185,6 @@ export default function Home() {
   };
 
   return (
-    <SpeedInsights urls="https://pantry-lac.vercel.app/"/>>
     <Box
       width="100vw"
       height="100vh"
