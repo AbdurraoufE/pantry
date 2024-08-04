@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const style = {
   position: 'absolute',
@@ -184,6 +185,7 @@ export default function Home() {
   };
 
   return (
+    <SpeedInsights urls="https://pantry-lac.vercel.app/"/>>
     <Box
       width="100vw"
       height="100vh"
