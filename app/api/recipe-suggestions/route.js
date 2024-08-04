@@ -20,7 +20,7 @@ export async function POST(request) {
         Including a list of ingredients and brief instructions. Include a name part, a recipe ingredients used, 
         and the instructions to make the recipe. Add emojis to the recipe`}
       ],
-      max_tokens: 200,
+      max_tokens: 250,
     });
 
     const recipe = response.choices[0].message.content.trim();

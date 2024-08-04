@@ -208,18 +208,21 @@ export default function Home() {
           onChange={(e) => setSearchTerm(e.target.value)}
           sx={{ mb: 2 }}
         />
-        <Button variant="contained" onClick={handleSearch}>Search</Button>
+        <Button variant="contained" 
+        sx={{ mt: 2, color:"#000", backgroundColor:"#7a8aff", "&:hover": {backgroundColor: "#6270d9"}}}
+        onClick={handleSearch}>Search</Button>
         <Button
           variant="contained"
           color="primary"
           onClick={GetTheRecipes}
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, color:"#000", backgroundColor:"#c986fc", "&:hover": {backgroundColor: "#b352ff"}}}
           disabled={loadingTime}
         >
           {loadingTime ? <CircularProgress size={24} /> : 'View Recipes'}
         </Button>
         <Button
           variant="outlined"
+          sx={{color:"#000", backgroundColor:"#ff6161", "&:hover": {backgroundColor: "#f24646"}}}
           onClick={() => {
             signOut(auth);
             sessionStorage.removeItem("user");
@@ -355,14 +358,16 @@ export default function Home() {
         width="100%"
         maxWidth="1200px"
         p={2}
-        sx={{ bgcolor: '#fff', borderRadius: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', mt: 2 }}
+        sx={{ bgcolor: '#fff', borderRadius: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', mt: 2, color: "#000", px: 2 }}
       >
         <Typography variant="h5" component="h2" mb={2}>
           Recipe Suggestions
         </Typography>
         <Card>
-          <CardContent>
-            <ReactMarkdown children={recipeSuggestions} remarkPlugins={[remarkGfm]} />
+          <CardContent sx={{ p: 2 }}>
+            <Box sx={{ pl: 2 }}> {/* Adding padding-left to the Box wrapping ReactMarkdown */}
+              <ReactMarkdown children={recipeSuggestions} remarkPlugins={[remarkGfm]} />
+            </Box>
           </CardContent>
         </Card>
       </Box>
