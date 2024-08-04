@@ -1,12 +1,14 @@
 'use client'
-import React, { useState, useEffect } from 'react'
-import { Box, Stack, Typography, Button, Modal, TextField, Grid } from "@mui/material";
+import React, { useState, useEffect, useRef } from 'react'
+import { Box, Stack, Typography, Button, Modal, TextField, Grid, CircularProgress, Card, CardContent, Toolbar, AppBar } from "@mui/material";
 import { firestore } from '@/firebase';
 import { collection, query, doc, getDocs, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "@/app/firebase/config"
 import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const style = {
   position: 'absolute',
@@ -32,11 +34,11 @@ const fetchImageFromUnsplash = async (query) => {
     if (data.results && data.results.length > 0) {
       return data.results[0].urls.small;
     } else {
-      return ''; // Return an empty string or a default image URL if no results are found
+      return '';
     }
   } catch (error) {
     console.error('Error fetching image from Unsplash:', error);
-    return ''; // Return an empty string or a default image URL in case of an error
+    return ''; 
   }
 };
 
@@ -51,6 +53,8 @@ export default function Home() {
   const [user] = useAuthState(auth);
   const router = useRouter();
   const [userSession, setUserSession] = useState("user");
+  const [loadingTime, setLoading] = useState(false);
+  const [recipeSuggestions, setSuggestions] = useState('');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -147,6 +151,35 @@ export default function Home() {
     }
   };
 
+  // edit this function
+  const getPantryItems = async () => {
+    const snapshot = collection(firestore, "pantry");
+    const docs = await getDocs(snapshot);
+    const pantryList = docs.docs.map(doc => doc.id); // Assuming the item name is the document ID
+    return pantryList;
+  };
+
+  // Gets the recipes
+  const GetTheRecipes = async () => {
+    // loads in the recipes
+    setLoading(true);
+    const pantryItems = await getPantryItems();
+
+    // OpenAI posts the list of recipes
+    const response = await fetch('/api/recipe-suggestions', {
+      // post request to show the list of recipes
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ items: pantryItems }), 
+    });
+
+    const Getdata = await response.json();
+    setSuggestions(Getdata.recipe); 
+    setLoading(false);
+  };
+
   return (
     <Box
       width="100vw"
@@ -157,70 +190,81 @@ export default function Home() {
       flexDirection={"column"}
       gap={2}
     >
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Typography
-              id="modal-modal-title"
-              variant="h6"
-              component="h2"
-              sx={{ color: 'black' }} // Set the text color to black
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box   
+ sx={style}>
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            sx={{ color: 'black'   
+ }} // Set the text color to black
+          >
+            Add an item
+          </Typography>
+          <Stack width="100%" direction={"row"} spacing={2}>
+            <TextField
+              id="outlined-basic"
+              label="Item"
+              variant="outlined"
+              fullWidth
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+            />
+            <Button
+              variant="outlined"
+              onClick={() => {
+                addItem(itemName);
+                setItemName("");
+                handleClose();
+              }}
             >
-              Add an item
-            </Typography>
-            <Stack width="100%" direction={"row"} spacing={2}>
-              <TextField
-                id="outlined-basic"
-                label="Item"
-                variant="outlined"
-                fullWidth
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
-              />
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  addItem(itemName);
-                  setItemName("");
-                  handleClose();
-                }}
-              >
-                Add
-              </Button>
-            </Stack>
-          </Box>
-        </Modal>
+              Add
+            </Button>
+          </Stack>
+        </Box>
+      </Modal>
       <Stack
         direction={"row"}
         spacing={2}
         alignItems={"center"}
         justifyContent={"center"}
-        sx={{marginBottom: 2}}
-      >
-      <TextField
-        label="Search item"
-        variant='outlined'
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
         sx={{ marginBottom: 2 }}
-      />
-      <Button variant="contained" onClick={handleSearch}>Search</Button>
-      <Button
-              variant="outlined"
-              onClick={() => {
-                signOut(auth);
-                sessionStorage.removeItem("user");
-                // route to sign up page
-                router.push("/sign-up")
-              }}
-            >
-              SignOut
-            </Button>
+      >
+        <TextField
+          label="Search item"
+          variant='outlined'
+          fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ marginBottom: 2 }}
+        />
+        <Button variant="contained" onClick={handleSearch}>Search</Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={GetTheRecipes}
+          sx={{ marginTop: 4 }}
+          disabled={loadingTime}
+        >
+          {loadingTime ? <CircularProgress size={24} /> : 'View Recipes'}
+        </Button>
+        <Button
+                variant="outlined"
+                onClick={() => {
+                  signOut(auth);
+                  sessionStorage.removeItem("user");
+                  // route to sign up page
+                  router.push("/sign-up")
+                }}
+              >
+                SignOut
+        </Button>
       </Stack>
       <Box border={"1px solid #333"}>
         <Box
@@ -250,79 +294,109 @@ export default function Home() {
         </Box>
         <Box
           width={"1500px"}
-          height={"300px"} // Set a fixed height
-          overflow={"auto"} // Enable scrolling if needed
+          height={"300px"}
+          overflow={"auto"}
           padding={2}
         >
-        <Grid container spacing={2}>
-          {filteredPantry.map((item) => (
-            <Grid item xs={6} md={4} lg={3} key={item.name}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                border="1px solid #ccc"
-                borderRadius="8px"
-                padding={2}
-              >
-                {/* <img src={item.imageUrl} alt={item.name} style={{ width: '100px', height: '100px' }} /> */}
-                <Typography variant="h6">{item.name}</Typography>
-                <Typography variant="body2">Quantity: {item.count}</Typography>
-                <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
-                  <Box display="flex" gap={1} mb={1}>
+          <Grid container spacing={2}>
+            {filteredPantry.map((item) => (
+              <Grid item xs={6} md={4} lg={3} key={item.name}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  border="1px solid #ccc"
+                  borderRadius="8px"
+                  padding={2}
+                >
+                  <Typography variant="h6">{item.name}</Typography>
+                  <Typography variant="body2">Quantity: {item.count}</Typography>
+                  <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
+                    <Box display="flex" gap={1} mb={1}>
+                      <Button
+                        onClick={() => incrementQuantity(item.name)}
+                        sx={{
+                          backgroundColor: "#4caf50",
+                          color: "#fff",
+                          borderRadius: '4px',
+                          padding: '4px 8px',
+                          '&:hover': {
+                            backgroundColor: "#388e3c",
+                          },
+                          fontSize: '0.9rem',
+                        }}
+                      >
+                        +
+                      </Button>
+                      <Button
+                        onClick={() => decrementQuantity(item.name)}
+                        sx={{
+                          backgroundColor: "#f44336",
+                          color: "#fff",
+                          borderRadius: '4px',
+                          padding: '4px 8px',
+                          '&:hover': {
+                            backgroundColor: "#c62828",
+                          },
+                          fontSize: '0.9rem',
+                        }}
+                      >
+                        -
+                      </Button>
+                    </Box>
                     <Button
-                      onClick={() => incrementQuantity(item.name)}
+                      onClick={() => removeItem(item.name)}
                       sx={{
-                        backgroundColor: "#4caf50", // Green color
+                        backgroundColor: "#e64a19",
                         color: "#fff",
                         borderRadius: '4px',
                         padding: '4px 8px',
                         '&:hover': {
-                          backgroundColor: "#388e3c", // Darker green on hover
+                          backgroundColor: "#d84315",
                         },
                         fontSize: '0.9rem',
                       }}
                     >
-                      +
-                    </Button>
-                    <Button
-                      onClick={() => decrementQuantity(item.name)}
-                      sx={{
-                        backgroundColor: "#f44336", // Red color
-                        color: "#fff",
-                        borderRadius: '4px',
-                        padding: '4px 8px',
-                        '&:hover': {
-                          backgroundColor: "#c62828", // Darker red on hover
-                        },
-                        fontSize: '0.9rem',
-                      }}
-                    >
-                      -
+                      Remove
                     </Button>
                   </Box>
-                  <Button
-                    onClick={() => removeItem(item.name)}
-                    sx={{
-                      backgroundColor: "#e64a19", // Darker red color
-                      color: "#fff",
-                      borderRadius: '4px',
-                      padding: '4px 8px',
-                      '&:hover': {
-                        backgroundColor: "#d84315", // Darker shade on hover
-                      },
-                      fontSize: '0.9rem',
-                    }}
-                  >
-                    Remove
-                  </Button>
                 </Box>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       </Box>
+      {recipeSuggestions && (
+  <Card
+    sx={{
+      marginTop: 4,
+      padding: 2,
+      borderRadius: 3,       
+      boxShadow: 10,           
+      backgroundColor: '#fafafa',
+      border: '1px solid #ddd',         
+      margin: '0 auto',       
+      background: 'linear-gradient(135deg, #e0f7fa, #b9fbc0)', // Gradient background
+    }}
+  >
+    <CardContent
+      sx={{
+        padding: 3,         // Padding inside the CardContent
+      }}
+    >
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h1: (props) => <Typography variant="h5" component="h1" gutterBottom {...props} />,
+          h2: (props) => <Typography variant="h6" component="h2" gutterBottom {...props} />,
+          p: (props) => <Typography variant="body1" paragraph {...props} />,
+        }}
+      >
+        {recipeSuggestions}
+      </ReactMarkdown>
+    </CardContent>
+  </Card>
+)}
     </Box>
   );
 }

@@ -91,7 +91,7 @@ body {
 
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #bba281; /* Background color for the whole page */
+  background-color: #bba383; /* Background color for the whole page */
   color: #ffffff;
   display: flex;
   justify-content: center;
@@ -256,3 +256,9 @@ p {
   color: #0056b3; /* Darker color on hover for better UX */
 }
 
+.navbar {
+  position: fixed; 
+  top: 0;          
+  left: 0;         
+  width: 100%;     
+}
