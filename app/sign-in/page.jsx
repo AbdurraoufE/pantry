@@ -36,6 +36,16 @@ const SignIn = () => {
     } catch (e) {
       console.error(e);
     }
+    // fix this to work properly
+    // if (error && error.message){
+    //   if (error.message.includes("auth/wrong-password")) {
+    //     setError("Incorrect password. Please try again.");
+    //   } else if (error.message.includes("auth/user-not-found")) {
+    //     setError("User not found. Please try again.");
+    //   }else{
+    //     setError("Please try again");
+    //   }
+    // }
   };
 
   return (
