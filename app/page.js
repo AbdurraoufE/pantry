@@ -55,7 +55,10 @@ export default function Home() {
   const [loadingTime, setLoading] = useState(false);
   const [recipeSuggestions, setSuggestions] = useState('');
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setItemName("")
+  }
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
