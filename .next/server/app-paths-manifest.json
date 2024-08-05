@@ -1,5 +1,6 @@
 {
   "/page": "app/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/sign-up/page": "app/sign-up/page.js",
   "/sign-in/page": "app/sign-in/page.js",
   "/api/recipe-suggestions/route": "app/api/recipe-suggestions/route.js"
