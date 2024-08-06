@@ -10,15 +10,17 @@
 
 ## Features
 
-Add and remove from the pantry
-Add quantities to items
+- Add and remove from the pantry
+- Add quantities to items
+- Search items from pantry
+- Generate recipes based on items in your pantry
 
 
 ## Tech Stack
 
-JavaScript
-React with Next.js
-Material UI
-Firebase
-CI/CD with Vercel and GitHub actions
-OpenAI API
+- JavaScript
+- React with Next.js
+- Material UI
+- Firebase
+- CI/CD with Vercel and GitHub actions
+- OpenAI API
