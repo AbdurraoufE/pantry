@@ -346,6 +346,12 @@ export default function Home() {
             fullWidth
             value={itemName}
             onChange={(e) => setItemName(e.target.value)}
+            // click enter on keyboard to add an item
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                addItem();
+              }
+            }}
           />
           <Button
             variant="contained"

@@ -13,10 +13,10 @@ export async function POST(request) {
     }
 
     const response = await openAIModel.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4',
       messages: [
         { role: 'system', content: 'You are the best chef in the world and know everything about food'},
-        { role: 'user', content: `Generate a summarized recipe using the following items and display the ingredients as a list: ${items.join(', ')}. 
+        { role: 'user', content: `Generate a summarized recipe using the following items, with their specific amounts, and display the ingredients as a list: ${items.join(', ')}. 
         Including a list of ingredients and brief instructions. Include a name part, a recipe ingredients used, 
         and the instructions to make the recipe. Add emojis to the recipe`}
       ],
